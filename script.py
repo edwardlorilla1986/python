@@ -9,6 +9,30 @@ from bs4 import BeautifulSoup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger()
 
+def send_email(recipient_email, subject, content):
+    """Send the generated blog content via email."""
+    try:
+        sender_email = "edwardlorilla2013@gmail.com"
+        sender_password = "giax bwty esxw dquw"
+
+        # Set up the MIME message
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = recipient_email
+        message["Subject"] = subject.replace("\n", " ").strip()
+
+        # Attach the blog content
+        message.attach(MIMEText(content, "plain"))
+
+        # Connect to the SMTP server
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient_email, message.as_string())
+            print(f"Email sent successfully to {recipient_email}.")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
 
 
 
