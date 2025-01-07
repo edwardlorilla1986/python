@@ -4,8 +4,9 @@ import logging
 import random
 import time
 from bs4 import BeautifulSoup
-
-# Configure logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger()
 
