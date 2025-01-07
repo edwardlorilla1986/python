@@ -112,7 +112,7 @@ def main():
         for recipient in recipients:
             send_email(
                 recipient_email=recipient,
-                subject=selected_question,
+                subject=selected_question['title'],
                 content=prompt
             )
         
