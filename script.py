@@ -9,6 +9,11 @@ from bs4 import BeautifulSoup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger()
 
+
+
+
+
+
 def generate_content(prompt):
     """Generate content using the Ollama model."""
     result = subprocess.run(
@@ -76,7 +81,19 @@ def main():
         
         # Generate content using Ollama
         response_content = generate_content(prompt)
-        
+        recipients = [
+            "edwardlance.lorilla.edwardlancelorilla@blogger.com",
+        ]
+        for recipient in recipients:
+            if "Error" not in blog_content:
+                send_email(
+                    recipient_email=recipient,
+                    subject=selected_question,
+                    content=prompt
+                )
+                print(f"Email sent to {recipient}")
+            else:
+                print(f"Blog content generation failed for {recipient}. Email will not be sent.")
         
         time.sleep(10)  # Respect API rate limits
     except Exception as e:
