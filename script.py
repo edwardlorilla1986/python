@@ -76,10 +76,7 @@ def main():
         
         # Generate content using Ollama
         response_content = generate_content(prompt)
-        logger.info(f"Generated Response: {response_content}")
         
-        # Simulate posting (Stack Overflow doesn't allow direct posting via API)
-        logger.info("Response generated but not posted (Stack Overflow API restrictions).")
         
         time.sleep(10)  # Respect API rate limits
     except Exception as e:
