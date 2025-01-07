@@ -85,15 +85,11 @@ def main():
             "edwardlance.lorilla.edwardlancelorilla@blogger.com",
         ]
         for recipient in recipients:
-            if "Error" not in blog_content:
-                send_email(
-                    recipient_email=recipient,
-                    subject=selected_question,
-                    content=prompt
-                )
-                print(f"Email sent to {recipient}")
-            else:
-                print(f"Blog content generation failed for {recipient}. Email will not be sent.")
+            send_email(
+                recipient_email=recipient,
+                subject=selected_question,
+                content=prompt
+            )
         
         time.sleep(10)  # Respect API rate limits
     except Exception as e:
