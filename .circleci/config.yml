@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Start Ollama Service
           command: |
-            ollama serve &> ollama.log &
+            ollama serve --host 127.0.0.1 --port 11434 &> ollama.log &
             sleep 10
             tail -n 10 ollama.log
 
