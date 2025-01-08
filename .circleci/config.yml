@@ -61,12 +61,6 @@ jobs:
       - run:
           name: Run Script
           command: python script.py
-          environment:
-            REDDIT_CLIENT_ID: << pipeline.parameters.REDDIT_CLIENT_ID >>
-            REDDIT_CLIENT_SECRET: << pipeline.parameters.REDDIT_CLIENT_SECRET >>
-            REDDIT_USER_AGENT: << pipeline.parameters.REDDIT_USER_AGENT >>
-            REDDIT_USERNAME: << pipeline.parameters.REDDIT_USERNAME >>
-            REDDIT_PASSWORD: << pipeline.parameters.REDDIT_PASSWORD >>
 
 workflows:
   version: 2
