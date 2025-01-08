@@ -113,7 +113,7 @@ def main():
             send_email(
                 recipient_email=recipient,
                 subject=selected_question['title'],
-                content=prompt
+                content=response_content
             )
         
         time.sleep(10)  # Respect API rate limits
