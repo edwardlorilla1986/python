@@ -34,3 +34,18 @@ jobs:
           name: Verify Ollama API
           command: |
             curl http://127.0.0.1:11434/ || (echo "Ollama service not responding" && exit 1)
+workflows:
+  version: 2
+  test:
+    jobs:
+      - fetch_and_generate
+  hourly_and_manual:
+    triggers:
+      - schedule:
+          cron: "0 6 * * *"  # Runs daily at 6:00 AM UTC
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - fetch_and_generate
