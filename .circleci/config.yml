@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Run Python Script
           command: |
-            python your_script_name.py "sunny day" "edwardlance.lorilla.edwardlorilla1@blogger.com"
+            python script.py "sunny day" "edwardlance.lorilla.edwardlorilla1@blogger.com"
       - run:
           name: Notify Success
           command: echo "Script executed successfully!"
