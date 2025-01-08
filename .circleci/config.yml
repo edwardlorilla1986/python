@@ -5,75 +5,32 @@ jobs:
     docker:
       - image: circleci/python:3.9
     steps:
-      # Step 1: Checkout the Repository
       - checkout
 
-      # Step 2: Install System Dependencies
+      # Install System Dependencies
       - run:
           name: Install System Dependencies
           command: |
             sudo apt-get clean
-            sudo rm -rf /var/lib/apt/lists/*
             sudo apt-get update
             sudo apt-get install -y imagemagick ghostscript curl jq
 
-      # Step 3: Install Ollama CLI
+      # Install Ollama CLI
       - run:
           name: Install Ollama CLI
           command: |
-            echo "Installing Ollama CLI..."
-            curl -fsSL https://ollama.com/install.sh | sh
-            ollama --version
+            curl -fsSL https://ollama.com/install.sh | sh && ollama --version || (echo "Ollama installation failed" && exit 1)
 
-      # Step 4: Start Ollama Service
+      # Start Ollama Service
       - run:
           name: Start Ollama Service
           command: |
-            echo "Starting Ollama service..."
-            ollama serve &
-            sleep 5  # Allow time for the service to initialize
+            ollama serve &> ollama.log &
+            sleep 10
+            tail -n 10 ollama.log
 
-      # Step 5: Verify Ollama Service
+      # Verify Ollama API
       - run:
-          name: Verify Ollama Service
+          name: Verify Ollama API
           command: |
-            echo "Checking if Ollama API is running..."
             curl http://127.0.0.1:11434/ || (echo "Ollama service not responding" && exit 1)
-
-      # Step 6: Pull LLaMA Model
-      - run:
-          name: Pull LLaMA Model
-          command: |
-            echo "Pulling the LLaMA 2 model..."
-            if ! ollama pull llama3; then
-              echo "Model pull failed. Please check model availability or permissions."
-              exit 1
-            fi
-
-      # Step 7: Install Python Dependencies
-      - run:
-          name: Install Python Dependencies
-          command: |
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
-
-      # Step 8: Run Script with Environment Variables
-      - run:
-          name: Run Script
-          command: python script.py
-
-workflows:
-  version: 2
-  test:
-    jobs:
-      - fetch_and_generate
-  hourly_and_manual:
-    triggers:
-      - schedule:
-          cron: "0 6 * * *"  # Runs daily at 6:00 AM UTC
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - fetch_and_generate
