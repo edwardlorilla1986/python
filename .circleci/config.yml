@@ -1,40 +1,85 @@
 version: 2.1
 
 jobs:
-  run-script:
+  fetch_and_generate:
     docker:
       - image: circleci/python:3.9
     steps:
+      # Step 1: Checkout the Repository
       - checkout
-      
-      # Step 1: Set up Python environment
+
+      # Step 2: Install System Dependencies
       - run:
-          name: Install Dependencies
+          name: Install System Dependencies
+          command: |
+            sudo apt-get clean
+            sudo rm -rf /var/lib/apt/lists/*
+            sudo apt-get update
+            sudo apt-get install -y ttf-mscorefonts-installer imagemagick ghostscript curl jq
+
+      # Step 3: Install Ollama CLI
+      - run:
+          name: Install Ollama CLI
+          command: |
+            echo "Installing Ollama CLI..."
+            curl -fsSL https://ollama.com/install.sh | sh
+            ollama --version
+
+      # Step 4: Start Ollama Service
+      - run:
+          name: Start Ollama Service
+          command: |
+            echo "Starting Ollama service..."
+            ollama serve &
+            sleep 5  # Allow time for the service to initialize
+
+      # Step 5: Verify Ollama Service
+      - run:
+          name: Verify Ollama Service
+          command: |
+            echo "Checking if Ollama API is running..."
+            curl http://127.0.0.1:11434/ || (echo "Ollama service not responding" && exit 1)
+
+      # Step 6: Pull LLaMA Model
+      - run:
+          name: Pull LLaMA Model
+          command: |
+            echo "Pulling the LLaMA 2 model..."
+            if ! ollama pull llama3; then
+              echo "Model pull failed. Please check model availability or permissions."
+              exit 1
+            fi
+
+      # Step 7: Install Python Dependencies
+      - run:
+          name: Install Python Dependencies
           command: |
             python -m pip install --upgrade pip
-            pip install requests
-      
-      # Step 2: Run the Python script
+            pip install -r requirements.txt
+
+      # Step 8: Run Script with Environment Variables
       - run:
-          name: Run Python Script
-          command: |
-            python script.py "sunny day" "edwardlance.lorilla.edwardlorilla1@blogger.com"
-      - run:
-          name: Notify Success
-          command: echo "Script executed successfully!"
+          name: Run Script
+          command: python script.py
+          environment:
+            REDDIT_CLIENT_ID: << pipeline.parameters.REDDIT_CLIENT_ID >>
+            REDDIT_CLIENT_SECRET: << pipeline.parameters.REDDIT_CLIENT_SECRET >>
+            REDDIT_USER_AGENT: << pipeline.parameters.REDDIT_USER_AGENT >>
+            REDDIT_USERNAME: << pipeline.parameters.REDDIT_USERNAME >>
+            REDDIT_PASSWORD: << pipeline.parameters.REDDIT_PASSWORD >>
 
 workflows:
+  version: 2
   test:
     jobs:
-      - run-script
-  version: 2
-  hourly:
+      - fetch_and_generate
+  hourly_and_manual:
     triggers:
       - schedule:
-          cron: "0 * * * *" # Run every hour
+          cron: "0 6 * * *"  # Runs daily at 6:00 AM UTC
           filters:
             branches:
               only:
                 - main
     jobs:
-      - run-script
+      - fetch_and_generate
