@@ -24,6 +24,9 @@ jobs:
           command: echo "Script executed successfully!"
 
 workflows:
+  test:
+    jobs:
+      - run-script
   version: 2
   hourly:
     triggers:
